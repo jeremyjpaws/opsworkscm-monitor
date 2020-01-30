@@ -24,12 +24,12 @@ def publish_sns(sns_topic, message):
     topic = sns_topic
     msg = message
     sns = client = boto3.client('sns')
-    response = "foobar"
-    # response = sns.publish(
-    #     TopicArn=topic,
-    #     Message=msg
-    # )
-    logger.info('Published message "{}" to topic "{}", with message ID "{}"', msg, topic, response)
+    response = "none"
+    response = sns.publish(
+         TopicArn=topic,
+         Message=msg
+      )
+    logger.info(f'Published message {msg} to topic {topic}, with message ID {response}')
 
 def describe_server(ow_server):
     server = ow_server
