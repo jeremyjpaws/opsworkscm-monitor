@@ -29,7 +29,7 @@ def publish_sns(sns_topic, message):
          TopicArn=topic,
          Message=msg
     )
-    logger.info(f'Published message {msg} to topic {topic}, with message ID {response}')
+    logger.info(f'Published message {msg} to topic {topic}, SNS ID is {response}')
 
 def describe_server(ow_server):
     server = ow_server
@@ -41,20 +41,21 @@ def describe_server(ow_server):
     status="unknown"
     for server in response["Servers"]:
         status = server["Status"]
-
-    logger.info(f'OW server status is: {status}')
-
-    # TODO describe and filter
+    logger.info(f'OW server {server} status is: {status}')    
+    return status
 
 def lambda_handler(event, context):
     logger.info('got event{}'.format(event))
     server = os.environ['SERVER']
     topic = os.environ['TOPIC']
     msg = os.environ['ALERT_MESSAGE']
-
-    describe_server(server)
-
-    #publish_sns(topic, msg)
+    status = describe_server(server)
+    trigger = os.environ['STATUS']
+    if status == trigger:
+        logger.info(f'Server status matches {trigger}, publishing SNS...')
+        publish_sns(topic, msg)
+    else:
+        logger.info(f'Server status {status} does not match {trigger}, therefore not generating SNS, ending function')
 
     return {
         'statusCode': 200,
