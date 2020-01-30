@@ -38,7 +38,11 @@ def describe_server(ow_server):
     response = ow.describe_servers(
         ServerName = server    
     )
-    logger.info(f'OW server status is: {response}')
+    status="unknown"
+    for server in response["Servers"]:
+        status = server["Status"]
+
+    logger.info(f'OW server status is: {status}')
 
     # TODO describe and filter
 
