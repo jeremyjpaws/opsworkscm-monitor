@@ -28,11 +28,18 @@ def publish_sns(sns_topic, message):
     response = sns.publish(
          TopicArn=topic,
          Message=msg
-      )
+    )
     logger.info(f'Published message {msg} to topic {topic}, with message ID {response}')
 
 def describe_server(ow_server):
     server = ow_server
+    ow = boto3.client('opsworkscm')
+    response = "none"
+    response = ow.describe_servers(
+        ServerName = server    
+    )
+    logger.info(f'OW server status is: {response}')
+
     # TODO describe and filter
 
 def lambda_handler(event, context):
@@ -41,7 +48,9 @@ def lambda_handler(event, context):
     topic = os.environ['TOPIC']
     msg = os.environ['ALERT_MESSAGE']
 
-    publish_sns(topic, msg)
+    describe_server(server)
+
+    #publish_sns(topic, msg)
 
     return {
         'statusCode': 200,
